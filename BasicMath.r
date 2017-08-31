@@ -11,3 +11,34 @@
 
 Math follows PEMDAS rule
 Parenthesis Exponential Multiplication Division Addition Subtraction
+
+x <- 2
+x
+
+y = 5
+y
+
+z <- 3
+z
+
+a <- b <- 7
+a
+b
+
+
+assign("j", 4)
+j
+
+
+rm(j)
+
+
+j
+
+
+theVariable <- 17
+theVariable
+
+THEVARIABLE
+
+theVariable
