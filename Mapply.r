@@ -1,3 +1,5 @@
+# When you have two lists and want to iterate then mapply is the best method for it.
+
 firstList <- list(A = matrix(1:16, 4), B = matrix(1:16, 2), c = 1:5)
 secondList <- list(A = matrix(1:16, 4), B = matrix(1:16, 8), c = 15:1)
 firstList
