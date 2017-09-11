@@ -287,8 +287,220 @@ m <- matrix(1:4, nrow = 2, ncol = 2)
 dimnames(m) <- list(c("a","b"), c("c","d"))
 m
 
+    
+#    Reading Tabular Data
+    
+#    There are a few principal functions reading data into R.
+    
+#    read.table() , read.csv() for reading tabular data
+#   These functions read text files that contain data that are stored in 
+#   kind of rows and columns type format and return a data frame format
+
+#   readLines() for reading lines of text file
+
+#   source() for reading in R code lines (inverse of dump)
+
+#   dget() for reading in R code lines  (inverse of dput)
+
+#   load() for reading in saved workspaces
+
+#   unserialize() for reading single R objects in binary form
+
+
+#   Writing Data
+# 
+#     There are analogous functions for writing data to files
+#     
+#     write.table()
+#     writeLines()
+#     dump()
+#     dput()
+#     save()
+#     serialize()
+
+
+#     Reading Data Files with read.table()
+#    
+#     The read.table() function is used for reading data.
+#     
+#     file, the name of the file or a connection
+#     
+#     header, logical indicating if the file has a header line
+#     
+#     sep, a string indicating how the columns are separated
+#     
+#     colClasses, a character vector indicating the class of each column in the dataset.
+#     
+#     nrows, the number of rows in the dataset.
+#     
+#     comment.char, a character string indicating the comment character
+#     
+#     skip, the number of lines skip from the beginning
+#     
+#     stringsAsFactors, should character variables be coded as factors?
+#       By default read.table() makes variables into factors.
 
 
 
+    #   read.table()
+    # 
+    #    For small to moderately sized datasets, you can usually call read.table() 
+    #   without specifying any other arguments
+    # 
+    #   data <- read.table("foo.txt")
+    # 
+    #   R will automatically 
+    #     skip lines begin with #
+    #     
+    #     figure out how many rows there are (and how much memory needs to be allocated)
+    #     
+    #     figure what type of variables in each column of the table.
+    #     
+    #     Telling R all these things directly makes R run faster and more efficiently.
+    #     
+    #     read.csv() is identical to read.table() except for read.csv separator is comma 
+    #     where as for the read.table() it is spaces. .csv is used for spreadsheets/Excel.
+
+
+    
+    
+#     Reading in Larger Datasets with read.table()
+#     
+#     With my larger datasets, doing the following things will make your life easier
+#     and will prevent R from choking.
+#     
+#         Read the help page for read.table(), which contains many hints
+#         
+#         Make a rough calculation of the memory required to store your dataset.
+#         If the dataset is larger than the amount of RAM on your computer, you can probably stop right here.
+#     
+#         Set comment.char = "", if there are no commented lines in your file.    
+    
+    
+#        Use the colClasses argument.
+        
+#        Specifying this option instead of using the default can make
+#        'read.table' run much faster, often TWICE as fast.
+        
+#        Inorder to use this option, you have to know the class of each
+#        column in your data frame()
+        
+#        If all the columns are "numeric", for example, then you can set
+#        colClasses = "numeric"
+    
+    
+    initial <- read.table("datatable.txt", nrows = 100)
+    
+    classes <- sapply(initial, class)
+    
+    tabAll <- read.table("datatable.txt", colClasses = classes)
+    
+    
+#       set nrows. It doesn't make R run faster but helps in memory usage.
+    
+    
+#       Know Thy System
+    
+#            In general, when using R with larger datasets, 
+#            it's useful to know a few things about your system.
+    
+#            How much memory is available?
+            
+#           What other applications are in use?
+            
+#            Are there other users logged into the same system?
+            
+#            What are the operating system?
+            
+#            Is the OS 32 or 64 bit?
+    
+    
+    
+#   Calculating Memory Requirements
+    
+#    I have a data frame with 1,500,000 rows and 120 columns,
+#    all of which are numeric data. Roughly,
+    
+#    How much memory is required to store this dataframe?
+    
+#    1,500,000 * 120 * 8 bytes/numeric
+    
+#    = 1,440,000,000 bytes
+    
+#    = 1,440,000,000 / 2^20 bytes/MB
+    
+#    = 1373.29 MB
+    
+#    = 1.34 GB
+    
+#   Rule of thumb is we need almost twice as much memory to read
+#   this dataset into R using read.table()
+    
+    
+#    Textual Formats
+    
+#    dumping and dputing are useful because the resulting textual format
+#    is editable and in the case of corruption, potentially recoverable.
+    
+#   Unlike writing out a table or csv file, dump and dput preserve the metadata
+#    (sacrificing some readability), so that another user don't have to specify it
+#    all over again
+    
+#   Textual formats can work much better with version control programs 
+#    like subversion or git which can only track changes meaningfully 
+#    in text files
+    
+    
+#   Textual formats can be longer-lived; if there is corruption somewhere
+#    in the file, it can be easier to fix the problem
+    
+#   Textual formats adhere to the "Unix Philosophy"
+    
+#   Downside: The format is not very adhere space-efficient.
+    
+    
+    
+#    dput-ting R Objects
+    
+#    Another way to pass data around is by deparsing the R object with dput
+#    and reading it back using dget.
+    
+    
+y <- data.frame(a = 1, b = "a")    
+    
+dput(y)    # Here it shows the structure of object 'y'
+
+dput(y, file = "y.R")
+    
+new.y <- dget("y.R")    
+    
+new.y    
+
+y
+    
+    
+# dput() essentially writes R code which can be used to reconstruct an R object    
+    
+    
+#   Difference between dget() and dump() is that 
+#    dget() can be used only on one single R object whereas
+#    dump() can be used on multiple objects.
+ 
+#    Dumping R objects
+
+# Multiple objects can be deparsed using the dump() and read back in source()
+
+x <- "foo"
+
+y <- data.frame(a = 1, b = "a")
+    
+dump(c("x", "y"), file = "data.R")    
+    
+rm(x,y)    
+    
+source("data.R")    
+    
+y
+x
 
 
