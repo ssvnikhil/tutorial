@@ -31,7 +31,9 @@ x
 #     3. integer
 #     4. complex numbers
 #     5. logical (True / False)
+    (LINCOC)
 
+table
 
 #    Most basic object is a vector
     
@@ -124,7 +126,7 @@ class(y) # character
 #     Objects can be explicitly coerced from one class to another using as.* function
 
 x <- 0:6
-class(x)
+class(x) # numeric
 
 as.numeric(x) # 0 1 2 3 4 5 6
 
@@ -345,7 +347,7 @@ m
     #   read.table()
     # 
     #    For small to moderately sized datasets, you can usually call read.table() 
-    #   without specifying any other arguments
+    #     without specifying any other arguments
     # 
     #   data <- read.table("foo.txt")
     # 
@@ -504,3 +506,265 @@ y
 x
 
 
+#   Interfaces to the outside world
+
+
+
+#    Data are read in using connection interfaces. 
+#    Connections can be made to files (most common) or to other exotic things.
+    
+#        file, opens a connection to a file.
+        
+#      gzfile, opens a connection to a file compressed with gzip.
+        
+#        bzfile, opens a connection to a file compressed with bzip2.
+        
+#        url, opens a connection to a webpage.
+
+
+#   File connections
+
+str(file) # Structure of a file
+
+#   desciption is the name of the file
+#   open is a code indicating
+        
+#   "r" read only
+#   "w" writing (and initializing a new line)
+#   "a" appending
+#   "rb", "wb", "ab" reading, writing or appending in binary mode
+
+#   Connections
+
+#   In general, connections are powerful tools that let you navigate files
+#   or other external objects. We don't deal with the connection interface directly.
+
+con <- file("foo.txt", "r")
+data <- read.csv(con)
+close(con)
+
+# Same as 
+data <- read.csv("foo.txt")
+
+#   Reading Lines of a Text File
+
+con <- gzfile("words.gz")
+x <- readLines(con, 10)
+x # You will be able to read 10 lines.
+
+#   writeLines takes a character vector and writes each
+#   element one line at a time to a text file.
+
+
+#    readLines can be useful for reading in lines of webpages.
+
+con <- url("http://www.jhsph.edu", "r")
+x <- readLines(con)
+head(x)    
+    
+
+
+#   Subsetting
+
+#   There are a number of operators that can be used to extract subsets of R objects.
+
+#   [ always returns an object of the same class as the original;
+#       can be used to select more than one element (except one exception)
+
+#   [[ is used to extract elements of a list or a dataframe; It can only be used
+#   to extract a single element and the class of the returned object is not
+#   necessarily be a list or a dataframe.
+
+#   $ is used to extract elements of a list or a dataframe by name
+#        semantics are similar to that of [[
+
+
+x <- c("a", "b", "c", "c", "d", "a")
+x[1] # Numeric indices
+x[2]
+x[1:4]
+x[x > "a"] # Logical indices
+
+u <- x > "a"
+u
+x[u]
+
+
+#   Subsetting Lists
+
+x <- list(foo = 1:4, bar = 0.6)
+x[1]
+x["foo"]
+
+x[[1]]
+x$foo
+
+x[2]    # Display name and value
+x["bar"]    # Display name and value
+
+x[[2]]        # Display value only
+x$bar       # Display  value only
+x[["bar"]]    # Display  value only
+
+
+#   To extract multiple column values we use '['
+
+x <- list(foo = 1:4, bar = 0.6, baz = "hello")
+x[c(1,3)]
+
+
+
+#   The [[ operator can be used with computed indices
+#   $ can only be used with literal names.
+
+x <- list(foo = 1:4, bar = 0.6, baz = "hello")
+name <- "foo"
+
+x[[name]] # valid!
+
+x$name # Invalid
+
+x$foo # valid!
+
+#   Subsetting Nested Elements of a List
+
+#   The [[ can take an integer sequence
+
+x <- list(a = list(10, 12, 14), b = c(3.14, 2.81))
+x[[c(1,3)]]
+
+x[[1]][[3]]
+
+x[[c(2,1)]]
+
+
+#  Subsetting a Matrix
+
+#   Matrices can be subsetted in the usual way with (i,j) type indices.
+
+x <- matrix(1:6, 2, 3)
+x
+
+x[1,2]
+x[2,1]
+
+#   Indices can also be missing.
+
+x[1,]
+x[, 2]
+
+
+#   By default, when a single element of a matrix is retrieved, it is returned
+#   as a vector of length 1 rather than a 1*1 matrix. This behavior can be
+#   turned off by setting drop = FALSE (by default drop value is TRUE)
+
+
+x <- matrix(1:6, 2,3)
+x[1,2]
+
+x[1,2, drop = FALSE] # This will show us in a 1*1 matrix.
+
+
+#   Similarly subsetting a single column or a single row will give you a vector, not a matrix ( by default)
+
+x <- matrix(1:6, 2,3)
+x[1, ]
+
+x[1, , drop = FALSE]
+
+
+#   Partial Matching with names
+
+x <- list(aardvark = 1:5)
+
+x$a # Here it will find the column which starts with letter a
+
+x[["a"]] # Here it tries to match with exact column name of a
+
+x[["a", exact = FALSE]] # Hope you understood!
+
+
+#   Removing NA values
+#   A common task is to remove missing values (NA's)
+
+
+x <- c(1,2,NA,4,NA,5)
+x
+is.na(x)
+bad <- is.na(x)
+bad
+x[!bad] # indicates non missing values.
+
+
+#   What if there are multiple things and you want to take the subset with no missing value
+
+x <- c(1,2,NA,4,NA,5)
+y <- c("a", "b", NA, "d", NA, "f")
+
+good <- complete.cases(x,y)
+x[good]
+y[good]
+
+
+airquality[1:6, ]
+
+good <- complete.cases(airquality)
+
+airquality[good,][1:6, ]
+
+
+#   Vectorized Operations
+
+#   Many operations in R are vectorized making code more efficient, concise, and easier to read.
+# element operations
+x <- 1:4; y <- 6:9
+x
+y
+x + y
+x > 2
+x >= 2
+
+y == 8
+
+x * y
+x / y
+
+
+# Vectorize Matrix Operations
+
+x <- matrix(1:4,2,2); y <- matrix(rep(10,4),2,2) 
+# rep - repeat function, 1st argument is number & 2nd arg.is how many times to repeat
+
+x * y # element wise operation x[1][1] * y[1][1] and similar fashion
+
+x / y # element wise operation
+
+# For Matrix multiplication we use %*%
+
+x %*% y
+
+x <- c(1,3,5)
+y <- c(3,2,10)
+rbind(x,y)
+
+x <- list(2, "a", "b", TRUE)
+x[[2]]
+
+x<- 1:4
+y<-2
+x+y
+
+x <- c(3,5,1,10,12,6)
+x[x<6]<- 0
+x
+
+data = read.csv("data/hw1_data.csv")
+names(data)
+data[1:2,]
+nrow(data)
+
+data$Ozone[47]
+le <- is.na(data[["Ozone"]])
+length(le)
+install_from_swirl("R Programming")
+swirl()
