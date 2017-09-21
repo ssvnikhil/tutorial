@@ -56,6 +56,8 @@ tipIntercept$coefficients # Displays intercept column instead of friday
 
 summary(tipAnova)
 
+require(dplyr)
+
 tipsByDay <- ddply(tips, "day", summarize,
                    tip.mean = mean(tip), tip.sd = sd(tip),
                    Length = NROW(tip), 
@@ -63,3 +65,5 @@ tipsByDay <- ddply(tips, "day", summarize,
                    Lower = tip.mean - tfrac * tip.sd/sqrt(Length),
                    Upper = tip.mean + tfrac * tip.sd/sqrt(Length))
 
+ggplot(tipsByDay, aes(x = tip.mean, y = day)) + geom_point() +
+     geom_errorbarh(aes(xmin = Lower, xmax = Upper), height = 0.2)
